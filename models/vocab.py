@@ -5,6 +5,7 @@ from zipfile import ZipFile
 
 import numpy as np
 import requests
+import torch
 from tqdm import tqdm
 
 
@@ -105,6 +106,12 @@ class GloVe:
                 vec_str = word + " " + vec_str + "\n"
 
                 fp.write(vec_str)
+
+    def get_embeddings(self, as_tensor: bool = True):
+        if as_tensor:
+            return torch.from_numpy(self.vectors)
+
+        return self.vectors
 
     def _download_and_extract(self, size: str, dim: int, cache: str):
         """
