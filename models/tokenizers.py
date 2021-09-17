@@ -39,11 +39,16 @@ class BiLSTMTokenizer(BaseTokenizer):
             corpus = [corpus]
 
         vectors = [self._vectorize_document(doc) for doc in corpus]
+        seq_lens = [len(doc) for doc in vectors]
 
         if self.padding:
-            return pad_sequence(vectors, padding_value=self.vocab['PAD'], batch_first=True)
+            max_len = max(seq_lens)
+            seq_lens = torch.LongTensor(seq_lens)
+            mask = torch.arange(max_len)[None, :] < seq_lens[:, None]
 
-        return vectors
+            return pad_sequence(vectors, padding_value=self.vocab['PAD'], batch_first=True), mask
+
+        return vectors, seq_lens
 
     def _vectorize_document(self, doc: str):
         vector = [self.vocab[word] for word in doc.split(' ')]
