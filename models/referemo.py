@@ -7,16 +7,26 @@ from models.reference_encoders import BERTReferenceEncoder
 from models.text_encoders import BiLSTMTextEncoder
 
 
+# Model hyperparameters are
+# pretrained_bert = "bert-base-uncased"
+# hdim = 128
+# n_layers = 2
+# freeze_embeddings = False
+# encoder_dropout_p = 0.5
+# classification_dropout_p = 0.5
 class ReferEmo(nn.Module):
-    def __init__(self, embeddings: torch.Tensor, nclasses: int):
+    def __init__(
+        self,
+        embeddings: torch.Tensor,
+        nclasses: int,
+        pretrained_bert: str = 'bert-base-uncased',
+        hdim: int = 128,
+        n_layers: int = 2,
+        freeze_embeddings: bool = False,
+        encoder_dropout_p: float = 0.5,
+        classification_dropout_p: float = 0.5
+    ):
         super().__init__()
-        # Hyperparameters
-        pretrained_bert = "bert-base-uncased"
-        hdim = 128
-        n_layers = 2
-        freeze_embeddings = False
-        encoder_dropout_p = 0.5
-        classification_dropout_p = 0.5
 
         self.reference_encoder = BERTReferenceEncoder(pretrained_bert)
         self.text_encoder = BiLSTMTextEncoder(
