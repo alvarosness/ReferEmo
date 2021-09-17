@@ -1,6 +1,7 @@
 import os
 import pickle
 from tempfile import NamedTemporaryFile
+from typing import List
 from zipfile import ZipFile
 
 import numpy as np
@@ -36,13 +37,15 @@ class Vocab:
         for word in sentence.split(' '):
             self.add_word(word)
 
-    def add_word(self, word: str):
+    def add_word(self, word: str) -> bool:
         """Add word to vocabulary if it doesn't already exist."""
         if word in self.word2index:
-            return
+            return False
 
         self.word2index[word] = len(self.index2word)
         self.index2word.append(word)
+
+        return True
 
     def save(self, filepath: str):
         """Saves the vocabulary to the specified file. Data is saved as a binary object."""
@@ -93,6 +96,20 @@ class GloVe:
 
     def __getitem__(self, item):
         return self.vectors[self.vocab[item]]
+
+    def add_words(self, words: List[str]):
+        """
+        Adds new words to the GloVe vocab and generates 
+        new vectors as averages of all the word vectors
+        """
+        for word in words:
+            if self.vocab.add_word(word):
+                new_vector = np.mean(self.vectors, axis=0)
+
+                # Reshaping so that vector becomes 1xdim
+                new_vector = np.reshape(new_vector, (1, -1))
+
+                self.vectors = np.concatenate([self.vectors, new_vector])
 
     def save(self, filepath: str):
         """
