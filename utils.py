@@ -84,7 +84,7 @@ class DataProcessor:
 
         # Torchify labels if they exist
         if labels is not None:
-            labels = torch.LongTensor(labels)
+            labels = labels.to(dtype=torch.float64)
             return inputs, labels
 
         return inputs
