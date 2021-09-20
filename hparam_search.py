@@ -167,7 +167,7 @@ if __name__ == '__main__':
     for key, value in trial.params.items():
         print("    {}: {}".format(key, value))
 
-    os.makedirs(args.output_dir)
+    os.makedirs(args.output_dir, exist_ok=True)
 
     json.dump(trial.params, open(os.path.join(
         args.output_dir, "params.json"), "w"))
@@ -181,4 +181,4 @@ if __name__ == '__main__':
     viz.plot_intermediate_values(study).write_html(
         os.path.join(args.output_dir, "learning_curve.html"))
     viz.plot_optimization_history(study).write_image(
-        os.path.join(args.ouput_dir, "optimization_history.png"))
+        os.path.join(args.output_dir, "optimization_history.png"))
