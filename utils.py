@@ -26,6 +26,7 @@ class ReferEmoModelInput:
         self.reference_inputs = {key: value.to(
             device) for key, value in self.reference_inputs.items()}
         self.text_inputs = self.text_inputs.to(device)
+        self.text_masks = self.text_masks.to(device)
 
         return self
 
