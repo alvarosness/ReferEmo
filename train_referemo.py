@@ -33,8 +33,8 @@ def train(model: nn.Module, train_dl: DataLoader, valid_dl: DataLoader, preproce
 
     for epoch in range(epochs):
         model.train()
-
         train_loss = 0.0
+
         for data, labels in tqdm(train_dl):
             # HACK
             # Need to convert this tuple of strings into a list of strings
@@ -56,11 +56,12 @@ def train(model: nn.Module, train_dl: DataLoader, valid_dl: DataLoader, preproce
             optimizer.zero_grad()
         train_loss /= len(train_dl.dataset)
         train_losses.append(train_loss)
-        model.eval()
 
+        model.eval()
         valid_loss = 0.0
+
         with torch.no_grad():
-            for data, labels in tqdm(train_dl):
+            for data, labels in tqdm(valid_dl):
                 data = list(data)
 
                 model_input, labels = preprocessor.generate_batch_input(
@@ -191,7 +192,7 @@ if __name__ == '__main__':
     if device == 'cuda' and torch.cuda.device_count() > 1:
         model = nn.DataParallel(model)
 
-    model.to(device)
+    model = model.to(device)
 
     model, train_losses, valid_losses = train(model, train_dl, valid_dl, preprocessor,
                                               args.epochs, config['optimizer'], config['lr'], device)
