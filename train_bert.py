@@ -84,6 +84,7 @@ def test(model, test_dl, tokenizer, threshold, device):
     with torch.no_grad():
         for data, _ in tqdm(test_dl):
             inputs = tokenizer(data, padding=True, return_tensors='pt')
+            inputs = {k: v.to(device) for k, v in inputs.items()}
 
             outputs = model(**inputs)
 
