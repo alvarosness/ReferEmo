@@ -1,4 +1,5 @@
 from torch import nn
+from transformers import AutoModel
 
 
 class BiLSTMTextEncoder(nn.Module):
@@ -26,3 +27,16 @@ class BiLSTMTextEncoder(nn.Module):
         X, _ = self.lstm(X)
 
         return X
+
+
+class BERTTextEncoder(nn.Module):
+    def __init__(self, pretrained_path: str = 'bert-base-uncased'):
+        super().__init__()
+
+        self.bert = AutoModel.from_pretrained(pretrained_path)
+        self.output_size = self.bert.config.hidden_size
+
+    def forward(self, inputs):
+        outputs = self.bert(**inputs, output_attentions=True)
+
+        return outputs.last_hidden_state, outputs.attentions

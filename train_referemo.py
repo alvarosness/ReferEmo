@@ -4,7 +4,7 @@ from sklearn import metrics
 import torch
 from torch import nn, optim
 from tqdm import tqdm
-from models.referemo import ReferEmo
+from models import referemo
 from torch.utils.data import DataLoader
 from models.vocab import GloVe
 from models.tokenizers import BERTTokenizer, BiLSTMTokenizer
@@ -130,9 +130,12 @@ def test(model, test_dl, preprocessor, threshold, device):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train-data", default="../data/semeval/train.txt")
-    parser.add_argument("--valid-data", default="../data/semeval/valid.txt")
-    parser.add_argument("--test-data", default="../data/semeval/test.txt")
+    parser.add_argument(
+        "--train-data", default="../data/semeval/small.train.txt")
+    parser.add_argument(
+        "--valid-data", default="../data/semeval/small.valid.txt")
+    parser.add_argument(
+        "--test-data", default="../data/semeval/small.test.txt")
     parser.add_argument("--text-column", default="Tweet")
     parser.add_argument("--sep", default="\t")
     parser.add_argument("--epochs", type=int, default=20)
@@ -143,6 +146,8 @@ if __name__ == '__main__':
     parser.add_argument("--glove", default=None)
     parser.add_argument("--gpu", action="store_true")
     parser.add_argument("--output-dir", default="trained_model")
+    parser.add_argument("--model", default="ReferEmo",
+                        choices=("ReferEmo", "ReferEmoV2"))
 
     args = parser.parse_args()
 
@@ -178,7 +183,7 @@ if __name__ == '__main__':
     classification_dropout_p = config['clf_dropout_p']
 
     # Load model
-    model = ReferEmo(
+    model = getattr(referemo, args.model)(
         embeddings=wv.get_embeddings(),
         nclasses=len(train_dataset.label_names),
         pretrained_bert=args.pretrained_bert,
@@ -213,6 +218,6 @@ if __name__ == '__main__':
     preds.to_csv(os.path.join(args.output_dir, "predictions.csv"))
     probs.to_csv(os.path.join(args.output_dir, "probabilities.csv"))
 
-    for idx, attn in enumerate(attns):
-        torch.save(attn, os.path.join(
-            args.output_dir, f"attentions_{idx}.pth"))
+    # for idx, attn in enumerate(attns):
+    #     torch.save(attn, os.path.join(
+    #         args.output_dir, f"attentions_{idx}.pth"))
