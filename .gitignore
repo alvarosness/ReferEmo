@@ -9,6 +9,9 @@ __pycache__/
 # Local files
 .vector_cache/
 .vscode/
+*.csv
+*.pt
+*.pth
 
 # Distribution / packaging
 .Python
